@@ -1,0 +1,33 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+int { printf("Token: INT\n"); }
+float { printf("Token: FLOAT\n"); }
+[a-zA-Z][a-zA-Z0-9]* { printf("Token: IDENTIFIER\n"); }
+[0-9]+"."[0-9]+ { printf("Token: FLOAT_LITERAL\n"); }
+[0-9]+ { printf("Token: INT_LITERAL\n"); }
+[ \t\n] ; // ignore whitespace and newline
+. { printf("Token: %s\n", yytext); }
+%%
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *file = fopen(argv[1], "r");
+    if (!file) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    yyin = file;
+    yylex();
+
+    fclose(file);
+
+    return 0;
+}
